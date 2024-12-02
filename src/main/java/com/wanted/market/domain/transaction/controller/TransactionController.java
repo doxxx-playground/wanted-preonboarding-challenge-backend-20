@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/transactions")
 @RequiredArgsConstructor
-public class TransactionController {
+public class TransactionController implements TransactionControllerSpec {
 
     private final TransactionService transactionService;
 
