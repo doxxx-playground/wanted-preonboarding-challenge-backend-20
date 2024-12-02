@@ -71,11 +71,25 @@ erDiagram
 
 ## 2. 엔티티 구현 (2024-03-02)
 
-### 2.1 BaseEntity 구현
-공통으로 사용할 BaseEntity를 구현했습니다:
-- `@MappedSuperclass`를 사용하여 상속 구조 구현
-- `@EntityListeners(AuditingEntityListener.class)`를 통해 생성/수정 시간 자동화
-- createdAt, updatedAt 필드 추가
+### 2.1 JPA Auditing & Base Entity 구현
+JPA Auditing 설정과 Base Entity를 구현했습니다:
+
+1. **JPA Auditing 설정**
+   - `@EnableJpaAuditing`으로 Auditing 기능 활성화
+   - `AuditorAware<String>` 구현으로 현재 사용자 정보 제공
+   - Security Context에서 인증된 사용자 정보 추출
+   - 미인증 사용자는 "SYSTEM"으로 기록
+
+2. **BaseTimeEntity 구현**
+   - `@MappedSuperclass`로 상속 구조 구현
+   - `@EntityListeners(AuditingEntityListener.class)`로 Auditing 이벤트 리스닝
+   - createdAt, updatedAt 필드 자동 관리
+   - 낙관적 락을 위한 version 필드 추가
+
+3. **BaseEntity 구현**
+   - BaseTimeEntity를 상속하여 시간 정보 재사용
+   - createdBy, updatedBy 필드로 생성/수정자 정보 관리
+   - 모든 필드에 적절한 제약조건 추가 (nullable, updatable 등)
 
 ### 2.2 User 엔티티 구현
 사용자 정보를 저장할 User 엔티티를 구현했습니다:
