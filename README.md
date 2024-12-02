@@ -1,6 +1,5 @@
 ## 원티드 프리온보딩 챌린지 백엔드 20 사전과제
 
-
 ### 설명
 사용자간 거래가 가능한 Wanted Market API를 생성해야합니다. 요구사항에 맞춰 진행해주세요. 
 요구사항은 **공통**과 **1단계(필수)**, **2단계(선택)** 로 나누어져 있습니다. 
@@ -8,9 +7,47 @@
 공통과 1단계는 필수로 진행해주시고, 2단계는 1단계를 마무리한 이후에 순차적으로 진행하시는 것을 추천합니다. 
 스프린트를 진행하면서 기능이 어떻게 발전해나가는지 사전 과제를 통해서 체험해보시면 좋겠습니다.
 
+### ERD
+```mermaid
+erDiagram
+    User ||--o{ Product : sells
+    User ||--o{ Transaction : participates
+    Product ||--o{ Transaction : involves
 
-<br>
+    User {
+        Long id PK
+        String email UK
+        String password
+        String name
+        LocalDateTime createdAt
+        LocalDateTime updatedAt
+    }
 
+    Product {
+        Long id PK
+        String name
+        BigDecimal price
+        ProductStatus status
+        Long sellerId FK
+        Integer quantity
+        LocalDateTime createdAt
+        LocalDateTime updatedAt
+    }
+
+    Transaction {
+        Long id PK
+        Long productId FK
+        Long buyerId FK
+        Long sellerId FK
+        TransactionStatus status
+        BigDecimal purchasePrice
+        LocalDateTime createdAt
+        LocalDateTime updatedAt
+    }
+```
+
+### 개발 로그
+프로젝트 진행 상황과 의사결정 과정은 [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md)에서 확인하실 수 있습니다.
 
 ### 요구사항
 
@@ -24,9 +61,6 @@
 7. 모든 사용자는 내가 "구매한 용품(내가 구매자)"과 "예약중인 용품(내가 구매자/판매자 모두)"의 목록을 확인할 수 있습니다.
 8. 판매자는 거래진행중인 구매자에 대해 '판매승인'을 하는 경우 거래가 완료됩니다.
 
-
-<br>
-
 ##### 2단계 (선택)
 9. 제품에 수량이 추가됩니다. 제품정보에 "제품명", "가격", "예약상태", "수량"이 포함되어야합니다. 
 10. 다수의 구매자가 한 제품에 대해 구매하기가 가능합니다. (단, 한 명이 구매할 수 있는 수량은 1개뿐입니다.)
@@ -38,7 +72,6 @@
 13. "구매한 용품"과 "예약중인 용품" 목록의 정보에서 구매하기 당시의 가격 정보가 나타나야합니다. 
     - 예) 구매자 A가 구매하기 요청한 당시의 제품 B의 가격이 3000원이었고 이후에 4000원으로 바뀌었다 하더라도 목록에서는 3000원으로 나타나야합니다. 
 
-
 ##### 공통
 0. Python이나 Java 기반의 프레임워크를 사용하시길 권장합니다. 
 1. 구매취소는 고려하지 않습니다.
@@ -48,8 +81,6 @@
 5. 개발과정에서 어려웠던 부분이나 예기치 못한 케이스가 있었다면 기록을 남겨주세요.
 6. 다른분들의 PR을 보면서 리뷰를 해보세요. 궁금한점을 자유롭게 남기면서 서로의 의견을 주고 받아주세요! 
 7. 요구사항을 잘 진행해주신 분들 중에서 추첨하여 선물을 드리겠습니다 :)
-
-<br>
 
 ### 제출방법
 1. 이 repository 를 clone 해주세요.
