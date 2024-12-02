@@ -409,3 +409,85 @@ JPA Auditing 설정과 Base Entity를 구현했습니다:
     - Swagger/OpenAPI 문서 작성
     - README 업데이트
     - API 명세서 작성
+
+## 6. API 문서화 및 보안/동시성 개선 (2024-03-02)
+
+### 6.1 OpenAPI(Swagger) 문서화 구현
+
+1. **기본 설정**
+    - springdoc-openapi 의존성 추가
+    - OpenApiConfig 설정 클래스 구현
+    - Swagger UI 및 API docs 경로 설정
+
+2. **API 스펙 인터페이스 분리**
+    - 각 컨트롤러에 대한 스펙 인터페이스 생성:
+        * ProductControllerSpec
+        * TransactionControllerSpec
+        * UserControllerSpec
+    - 상세한 API 문서화 어노테이션 추가:
+        * Operation 설명
+        * 파라미터 설명
+        * 응답 스키마
+        * 에러 케이스
+
+3. **문서화 세부 사항**
+    - JWT 인증 요구사항 명시
+    - 에러 응답 형식 정의
+    - API 그룹핑 및 태그 설정
+    - 서버 정보 설정
+
+### 6.2 보안 강화
+
+1. **JWT 인증 구현**
+    - JwtTokenProvider 구현:
+        * 토큰 생성 및 검증
+        * 사용자 인증 정보 추출
+    - JwtAuthenticationFilter 구현:
+        * 토큰 기반 인증 처리
+        * SecurityContext 관리
+
+2. **Security 설정**
+    - SecurityConfig 구현:
+        * 엔드포인트별 인증 요구사항 설정
+        * CSRF 보호
+        * 세션 관리 전략
+        * 비밀번호 인코딩 설정
+
+3. **보안 관련 설정**
+    - JWT 설정 값 외부화 (application.yaml)
+    - 토큰 만료 시간 설정
+    - 시크릿 키 관리
+
+### 6.3 동시성 제어 개선
+
+1. **낙관적 락(Optimistic Lock) 도입**
+    - 주요 엔티티에 @Version 필드 추가:
+        * User
+        * Product
+        * Transaction
+    - 충돌 감지 및 처리 구현
+
+2. **Repository 개선**
+    - Lock 관련 쿼리 명시적 정의
+    - @Query 어노테이션을 통한 락 전략 구체화
+    - 낙관적/비관적 락 조합 활용
+
+3. **동시성 전략**
+    - 재고 관리: 비관적 락 활용
+    - 일반 업데이트: 낙관적 락 활용
+    - 성능과 데이터 정합성의 균형 고려
+
+### 6.4 설정 관리 개선
+
+1. **YAML 기반 설정**
+    - properties에서 YAML로 마이그레이션
+    - 구조화된 설정 관리:
+        * 애플리케이션 설정
+        * JPA 설정
+        * JWT 설정
+        * 로깅 설정
+        * OpenAPI 설정
+
+2. **환경별 설정 분리 준비**
+    - 개발/운영 환경 분리 구조 마련
+    - 설정 값의 외부화 고려
