@@ -29,10 +29,10 @@ public class TransactionController implements TransactionControllerSpec {
      */
     @PostMapping
     public ResponseEntity<ResponseDto<TransactionResponse>> createTransaction(
-            @AuthenticationPrincipal Long userId,
+            @AuthenticationPrincipal String email,
             @RequestBody @Valid TransactionCreateRequest request
     ) {
-        TransactionResponse transaction = transactionService.createTransaction(userId, request);
+        TransactionResponse transaction = transactionService.createTransaction(email, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.success(transaction));
     }
 
@@ -42,11 +42,11 @@ public class TransactionController implements TransactionControllerSpec {
      */
     @PutMapping("/{id}/status")
     public ResponseEntity<ResponseDto<TransactionResponse>> updateTransactionStatus(
-            @AuthenticationPrincipal Long userId,
+            @AuthenticationPrincipal String email,
             @PathVariable Long id,
             @RequestBody @Valid TransactionStatusUpdateRequest request
     ) {
-        TransactionResponse transaction = transactionService.updateTransactionStatus(userId, id, request);
+        TransactionResponse transaction = transactionService.updateTransactionStatus(email, id, request);
         return ResponseEntity.ok(ResponseDto.success(transaction));
     }
 
@@ -56,10 +56,10 @@ public class TransactionController implements TransactionControllerSpec {
      */
     @GetMapping("/my/purchases")
     public ResponseEntity<ResponseDto<Page<TransactionResponse>>> getPurchasedTransactions(
-            @AuthenticationPrincipal Long userId,
+            @AuthenticationPrincipal String email,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<TransactionResponse> transactions = transactionService.getPurchasedTransactions(userId, pageable);
+        Page<TransactionResponse> transactions = transactionService.getPurchasedTransactions(email, pageable);
         return ResponseEntity.ok(ResponseDto.success(transactions));
     }
 
@@ -69,10 +69,10 @@ public class TransactionController implements TransactionControllerSpec {
      */
     @GetMapping("/my/ongoing")
     public ResponseEntity<ResponseDto<Page<TransactionResponse>>> getOngoingTransactions(
-            @AuthenticationPrincipal Long userId,
+            @AuthenticationPrincipal String email,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<TransactionResponse> transactions = transactionService.getOngoingTransactions(userId, pageable);
+        Page<TransactionResponse> transactions = transactionService.getOngoingTransactions(email, pageable);
         return ResponseEntity.ok(ResponseDto.success(transactions));
     }
 }

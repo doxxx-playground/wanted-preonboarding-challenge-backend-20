@@ -31,8 +31,7 @@ public class ProductController implements ProductControllerSpec {
     public ResponseEntity<ResponseDto<Page<ProductResponse>>> getProducts(
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<ProductResponse> products = productService.getAvailableProducts(pageable);
-        return ResponseEntity.ok(ResponseDto.success(products));
+        return ResponseEntity.ok(ResponseDto.success(productService.getAvailableProducts(pageable)));
     }
 
     /**
@@ -43,8 +42,7 @@ public class ProductController implements ProductControllerSpec {
     public ResponseEntity<ResponseDto<ProductResponse>> getProduct(
             @PathVariable Long id
     ) {
-        ProductResponse product = productService.getProduct(id);
-        return ResponseEntity.ok(ResponseDto.success(product));
+        return ResponseEntity.ok(ResponseDto.success(productService.getProduct(id)));
     }
 
     /**
@@ -53,10 +51,10 @@ public class ProductController implements ProductControllerSpec {
      */
     @PostMapping
     public ResponseEntity<ResponseDto<ProductResponse>> createProduct(
-            @AuthenticationPrincipal Long userId,
+            @AuthenticationPrincipal String email,
             @RequestBody @Valid ProductCreateRequest request
     ) {
-        ProductResponse product = productService.createProduct(userId, request);
+        ProductResponse product = productService.createProduct(email, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.success(product));
     }
 
@@ -66,11 +64,11 @@ public class ProductController implements ProductControllerSpec {
      */
     @PutMapping("/{id}")
     public ResponseEntity<ResponseDto<ProductResponse>> updateProduct(
-            @AuthenticationPrincipal Long userId,
+            @AuthenticationPrincipal String email,
             @PathVariable Long id,
             @RequestBody @Valid ProductUpdateRequest request
     ) {
-        ProductResponse product = productService.updateProduct(userId, id, request);
+        ProductResponse product = productService.updateProduct(email, id, request);
         return ResponseEntity.ok(ResponseDto.success(product));
     }
 }

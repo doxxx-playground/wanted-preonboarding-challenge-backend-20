@@ -49,7 +49,7 @@ public interface TransactionControllerSpec {
     @PostMapping
     ResponseEntity<ResponseDto<TransactionResponse>> createTransaction(
             @Parameter(hidden = true)
-            @AuthenticationPrincipal Long userId,
+            @AuthenticationPrincipal String email,
             @Parameter(description = "거래 생성 정보", required = true)
             @Valid @RequestBody TransactionCreateRequest request
     );
@@ -81,7 +81,7 @@ public interface TransactionControllerSpec {
     @PutMapping("/{id}/status")
     ResponseEntity<ResponseDto<TransactionResponse>> updateTransactionStatus(
             @Parameter(hidden = true)
-            @AuthenticationPrincipal Long userId,
+            @AuthenticationPrincipal String email,
             @Parameter(description = "거래 ID", required = true)
             @PathVariable Long id,
             @Parameter(description = "변경할 거래 상태 정보", required = true)
@@ -103,7 +103,7 @@ public interface TransactionControllerSpec {
     @GetMapping("/my/purchases")
     ResponseEntity<ResponseDto<Page<TransactionResponse>>> getPurchasedTransactions(
             @Parameter(hidden = true)
-            @AuthenticationPrincipal Long userId,
+            @AuthenticationPrincipal String email,
             @Parameter(description = "페이지네이션 정보")
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     );
@@ -123,7 +123,7 @@ public interface TransactionControllerSpec {
     @GetMapping("/my/ongoing")
     ResponseEntity<ResponseDto<Page<TransactionResponse>>> getOngoingTransactions(
             @Parameter(hidden = true)
-            @AuthenticationPrincipal Long userId,
+            @AuthenticationPrincipal String email,
             @Parameter(description = "페이지네이션 정보")
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     );
