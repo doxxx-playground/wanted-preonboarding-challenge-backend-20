@@ -16,11 +16,11 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(
-    name = "products",
-    indexes = {
-        @Index(name = "idx_status", columnList = "status"),
-        @Index(name = "idx_seller", columnList = "seller_id")
-    }
+        name = "products",
+        indexes = {
+                @Index(name = "idx_status", columnList = "status"),
+                @Index(name = "idx_seller", columnList = "seller_id")
+        }
 )
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -59,7 +59,7 @@ public class Product extends BaseEntity {
     @Builder
     private Product(String name, BigDecimal price, User seller, Integer quantity) {
         validateProductInfo(name, price, seller, quantity);
-        
+
         this.name = name;
         this.price = price;
         this.seller = seller;
@@ -128,5 +128,10 @@ public class Product extends BaseEntity {
         } else {
             this.status = ProductStatus.COMPLETED;
         }
+    }
+
+    public void updatePrice(BigDecimal price) {
+        validatePrice(price);
+        this.price = price;
     }
 }
