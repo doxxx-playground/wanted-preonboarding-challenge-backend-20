@@ -23,7 +23,10 @@ public enum ErrorCode {
     INSUFFICIENT_STOCK(HttpStatus.BAD_REQUEST, "상품의 재고가 부족합니다"),
 
     // Transaction 도메인
-    INVALID_TRANSACTION_STATUS(HttpStatus.BAD_REQUEST, "거래 상태가 올바르지 않습니다"),
+    TRANSACTION_NOT_FOUND(HttpStatus.NOT_FOUND, "거래를 찾을 수 없습니다"),
+    INVALID_TRANSACTION_PARTICIPANT(HttpStatus.BAD_REQUEST, "잘못된 거래 참여자입니다"),
+    INVALID_STATUS_UPDATE(HttpStatus.BAD_REQUEST, "잘못된 거래 상태 변경입니다"),
+    UNAUTHORIZED_TRANSACTION_ACCESS(HttpStatus.FORBIDDEN, "해당 거래에 대한 접근 권한이 없습니다"),
 
     // 5XX Server Error
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "내부 서버 오류가 발생했습니다");
