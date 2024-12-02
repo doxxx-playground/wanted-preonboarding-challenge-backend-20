@@ -40,6 +40,9 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
+    @Version
+    private Long version;
+
     @Builder
     private User(String email, String password, String name) {
         validateUserInfo(email, password, name);

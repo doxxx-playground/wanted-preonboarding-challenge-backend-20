@@ -15,13 +15,13 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(
-    name = "transactions",
-    indexes = {
-        @Index(name = "idx_product", columnList = "product_id"),
-        @Index(name = "idx_buyer", columnList = "buyer_id"),
-        @Index(name = "idx_seller", columnList = "seller_id"),
-        @Index(name = "idx_status", columnList = "status")
-    }
+        name = "transactions",
+        indexes = {
+                @Index(name = "idx_product", columnList = "product_id"),
+                @Index(name = "idx_buyer", columnList = "buyer_id"),
+                @Index(name = "idx_seller", columnList = "seller_id"),
+                @Index(name = "idx_status", columnList = "status")
+        }
 )
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -55,6 +55,9 @@ public class Transaction extends BaseEntity {
     @PositiveOrZero
     @Column(nullable = false)
     private BigDecimal purchasePrice;
+
+    @Version
+    private Long version;
 
     @Builder
     private Transaction(Product product, User buyer, User seller, BigDecimal purchasePrice) {
@@ -93,7 +96,7 @@ public class Transaction extends BaseEntity {
         if (product == null || buyer == null || seller == null) {
             throw new IllegalArgumentException("Product, buyer, and seller must not be null");
         }
-        
+
         if (buyer.getId().equals(seller.getId())) {
             throw new IllegalArgumentException("Buyer and seller cannot be the same user");
         }
