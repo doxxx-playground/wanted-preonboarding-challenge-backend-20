@@ -311,3 +311,101 @@ JPA Auditing 설정과 Base Entity를 구현했습니다:
     - 동시성 제어 전략
     - 데이터 일관성 유지 방안
     - 에러 처리 전략
+
+## 5. Controller 계층 구현 (2024-03-02)
+
+### 5.1 공통 구현 사항
+
+모든 컨트롤러에 대해 다음 사항을 공통으로 적용했습니다:
+
+1. **구조적 특징**
+    - @RestController와 적절한 @RequestMapping 사용
+    - 생성자 주입을 위한 @RequiredArgsConstructor 활용
+    - ResponseDto를 통한 일관된 응답 형식 제공
+
+2. **보안 처리**
+    - Spring Security의 @AuthenticationPrincipal을 통한 인증 처리
+    - 각 엔드포인트별 적절한 인증 요구사항 적용
+    - 비회원 접근 가능 엔드포인트 구분
+
+3. **Validation & Error Handling**
+    - @Valid를 통한 요청 데이터 검증
+    - 적절한 HTTP 상태 코드 반환
+    - GlobalExceptionHandler와의 연동
+
+4. **페이징 처리**
+    - @PageableDefault를 통한 기본 페이징 설정
+    - 정렬 기준 지정 (기본값: 생성일시 DESC)
+
+### 5.2 ProductController 구현
+
+상품 관리를 위한 컨트롤러를 구현했습니다:
+
+1. **엔드포인트 구성**
+    - GET /api/products - 상품 목록 조회 (비회원 가능)
+    - GET /api/products/{id} - 상품 상세 조회 (비회원 가능)
+    - POST /api/products - 상품 등록 (회원만)
+    - PUT /api/products/{id} - 상품 수정 (판매자만)
+
+2. **주요 기능**
+    - 비회원도 접근 가능한 조회 API 구현
+    - 회원 전용 등록/수정 기능 구현
+    - 페이징을 통한 대량 데이터 처리
+
+3. **권한 처리**
+    - 상품 등록: 로그인한 회원만 가능
+    - 상품 수정: 해당 상품의 판매자만 가능
+    - 조회: 모든 사용자 가능
+
+### 5.3 TransactionController 구현
+
+거래 관리를 위한 컨트롤러를 구현했습니다:
+
+1. **엔드포인트 구성**
+    - POST /api/transactions - 거래 생성 (구매하기)
+    - PUT /api/transactions/{id}/status - 거래 상태 변경 (승인/확정)
+    - GET /api/transactions/my/purchases - 내 구매 목록
+    - GET /api/transactions/my/ongoing - 내 진행중 거래 목록
+
+2. **주요 기능**
+    - 구매 프로세스 구현 (구매 요청 → 승인 → 확정)
+    - 구매/판매 내역 조회 기능
+    - 진행중인 거래 관리
+
+3. **보안 처리**
+    - 모든 엔드포인트에 인증 필요
+    - 거래 당사자만 상태 변경 가능
+    - 자신의 거래 내역만 조회 가능
+
+### 5.4 UserController 구현
+
+사용자 관리를 위한 컨트롤러를 구현했습니다:
+
+1. **엔드포인트 구성**
+    - POST /api/users - 회원 가입
+    - GET /api/users/me - 내 정보 조회
+
+2. **주요 기능**
+    - 회원가입 처리
+    - 현재 로그인한 사용자 정보 조회
+
+3. **보안 처리**
+    - 회원가입은 모든 사용자 접근 가능
+    - 내 정보 조회는 인증된 사용자만 가능
+
+### 5.5 다음 단계 계획
+
+1. **테스트 코드 작성**
+    - 각 컨트롤러에 대한 단위 테스트
+    - 통합 테스트를 통한 전체 플로우 검증
+    - 동시성 테스트로 성능 검증
+
+2. **보안 강화**
+    - Spring Security 설정 추가
+    - JWT 기반 인증 구현
+    - CORS 설정
+
+3. **문서화**
+    - Swagger/OpenAPI 문서 작성
+    - README 업데이트
+    - API 명세서 작성
