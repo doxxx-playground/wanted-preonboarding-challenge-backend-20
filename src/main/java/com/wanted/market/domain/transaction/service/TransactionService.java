@@ -37,21 +37,22 @@ public class TransactionService {
     @Transactional
     public TransactionResponse createTransaction(Long userId, TransactionCreateRequest request) {
         User buyer = getUserOrThrow(userId);
-        Product product = getProductOrThrow(request.productId());
+        Product product = productRepository.findByIdWithPessimisticLock(request.productId())
+                .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
         User seller = product.getSeller();
 
         validateTransactionCreation(buyer, product);
 
         Transaction transaction = Transaction.builder()
-            .product(product)
-            .buyer(buyer)
-            .seller(seller)
-            .purchasePrice(product.getPrice()) // 요구사항 13: 구매 시점의 가격 저장
-            .build();
+                .product(product)
+                .buyer(buyer)
+                .seller(seller)
+                .purchasePrice(product.getPrice()) // 요구사항 13: 구매 시점의 가격 저장
+                .build();
 
         product.decreaseQuantity(); // 요구사항 9, 12: 수량 관리
         updateProductStatus(product); // 요구사항 12: 수량에 따른 상태 변경
-        
+
         Transaction savedTransaction = transactionRepository.save(transaction);
         return TransactionResponse.from(savedTransaction);
     }
@@ -66,9 +67,9 @@ public class TransactionService {
         User user = getUserOrThrow(userId);
 
         validateStatusUpdate(transaction, user, request.status());
-        
+
         transaction.updateStatus(request.status());
-        
+
         if (request.status() == TransactionStatus.COMPLETED) {
             handleTransactionCompletion(transaction);
         }
@@ -83,7 +84,7 @@ public class TransactionService {
     public TransactionResponse getTransaction(Long userId, Long transactionId) {
         Transaction transaction = getTransactionOrThrow(transactionId);
         validateTransactionAccess(transaction, getUserOrThrow(userId));
-        
+
         return TransactionResponse.from(transaction);
     }
 
@@ -94,7 +95,7 @@ public class TransactionService {
     public Page<TransactionResponse> getPurchasedTransactions(Long userId, Pageable pageable) {
         User buyer = getUserOrThrow(userId);
         return transactionRepository.findByBuyerAndStatus(buyer, TransactionStatus.COMPLETED, pageable)
-            .map(TransactionResponse::from);
+                .map(TransactionResponse::from);
     }
 
     /**
@@ -104,13 +105,13 @@ public class TransactionService {
     public Page<TransactionResponse> getOngoingTransactions(Long userId, Pageable pageable) {
         User user = getUserOrThrow(userId);
         List<TransactionStatus> ongoingStatuses = List.of(
-            TransactionStatus.REQUESTED,
-            TransactionStatus.APPROVED
+                TransactionStatus.REQUESTED,
+                TransactionStatus.APPROVED
         );
 
         // 구매자 또는 판매자로서의 진행 중인 거래 조회
-        return transactionRepository.findRecentTransactionsByUser(user, pageable)
-            .map(TransactionResponse::from);
+        return transactionRepository.findRecentTransactionsByUser(user, ongoingStatuses, pageable)
+                .map(TransactionResponse::from);
     }
 
     /**
@@ -120,26 +121,26 @@ public class TransactionService {
     public Page<TransactionResponse> getProductTransactions(Long userId, Long productId, Pageable pageable) {
         User user = getUserOrThrow(userId);
         Product product = getProductOrThrow(productId);
-        
+
         validateProductAccess(product, user);
-        
+
         return transactionRepository.findByProduct(product, pageable)
-            .map(TransactionResponse::from);
+                .map(TransactionResponse::from);
     }
 
     private User getUserOrThrow(Long userId) {
         return userRepository.findById(userId)
-            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 
     private Product getProductOrThrow(Long productId) {
         return productRepository.findById(productId)
-            .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
     }
 
     private Transaction getTransactionOrThrow(Long transactionId) {
         return transactionRepository.findById(transactionId)
-            .orElseThrow(() -> new CustomException(ErrorCode.TRANSACTION_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.TRANSACTION_NOT_FOUND));
     }
 
     private void validateTransactionCreation(User buyer, Product product) {
@@ -170,7 +171,7 @@ public class TransactionService {
         }
 
         TransactionStatus currentStatus = transaction.getStatus();
-        
+
         switch (newStatus) {
             // 요구사항 8: 판매자의 판매 승인
             case APPROVED -> {
@@ -219,14 +220,14 @@ public class TransactionService {
             product.updateStatus(ProductStatus.ON_SALE);
         } else {
             List<TransactionStatus> ongoingStatuses = List.of(
-                TransactionStatus.REQUESTED,
-                TransactionStatus.APPROVED,
-                TransactionStatus.CONFIRMED
+                    TransactionStatus.REQUESTED,
+                    TransactionStatus.APPROVED,
+                    TransactionStatus.CONFIRMED
             );
-            
+
             boolean hasOngoingTransactions = transactionRepository.existsByProductAndStatusIn(
-                product,
-                ongoingStatuses
+                    product,
+                    ongoingStatuses
             );
 
             if (hasOngoingTransactions) {

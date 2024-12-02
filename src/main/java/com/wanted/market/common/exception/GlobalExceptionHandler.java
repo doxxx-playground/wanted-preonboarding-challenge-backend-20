@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
                 .stream()
                 .map(violation -> new ValidationError(
                         violation.getPropertyPath().toString(),
-                        violation.getInvalidValue().toString(),
+                        violation.getInvalidValue() == null ? "" : violation.getInvalidValue().toString(),
                         violation.getMessage()))
                 .toList();
 

@@ -72,8 +72,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
      * 특정 사용자(구매자 또는 판매자)의 최근 거래 내역을 조회합니다.
      * 6번 요구사항: 당사자간 거래내역 확인에 사용
      */
-    @Query("SELECT t FROM Transaction t WHERE t.buyer = :user OR t.seller = :user ORDER BY t.createdAt DESC")
-    Page<Transaction> findRecentTransactionsByUser(@Param("user") User user, Pageable pageable);
+    @Query("SELECT t FROM Transaction t WHERE (t.buyer = :user OR t.seller = :user) AND t.status IN :statuses ORDER BY t.createdAt DESC")
+    Page<Transaction> findRecentTransactionsByUser(@Param("user") User user, @Param("statuses") List<TransactionStatus> statuses, Pageable pageable);
 
     /**
      * 특정 상품에 대한 사용자의 거래 여부를 확인합니다.

@@ -85,6 +85,7 @@ public class ProductService {
     @Transactional
     public ProductResponse updateProduct(Long sellerId, Long productId, ProductUpdateRequest request) {
         Product product = findProductByIdAndSeller(productId, sellerId);
+        product.updatePrice(request.getPrice());
         product.updateQuantity(request.getQuantity());
         return ProductResponse.from(product);
     }
