@@ -41,16 +41,14 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
      * 동시성 제어가 필요한 재고 관리에 사용됩니다.
      */
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT p FROM Product p WHERE p.id = :id")
-    Optional<Product> findByIdWithPessimisticLock(@Param("id") Long id);
+    Optional<Product> findByIdWithPessimisticLock(Long id);
 
     /**
      * 상품을 optimistic lock으로 조회합니다.
      * version을 통한 동시성 제어에 사용됩니다.
      */
     @Lock(LockModeType.OPTIMISTIC)
-    @Query("SELECT p FROM Product p WHERE p.id = :id")
-    Optional<Product> findByIdWithOptimisticLock(@Param("id") Long id);
+    Optional<Product> findByIdWithOptimisticLock(Long id);
 
     /**
      * 상품 이름으로 상품을 검색합니다.

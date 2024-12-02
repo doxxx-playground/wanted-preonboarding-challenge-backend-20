@@ -1,9 +1,9 @@
 package com.wanted.market.domain.transaction.repository;
 
+import com.wanted.market.domain.product.Product;
 import com.wanted.market.domain.transaction.Transaction;
 import com.wanted.market.domain.transaction.TransactionStatus;
 import com.wanted.market.domain.user.User;
-import com.wanted.market.domain.product.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -62,8 +62,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
      * 특정 상품의 진행 중인 거래가 있는지 확인합니다.
      * 상품 상태 변경 시 사용됩니다.
      */
-    @Query("SELECT COUNT(t) > 0 FROM Transaction t WHERE t.product = :product AND t.status IN (:statuses)")
-    boolean existsOngoingTransactionForProduct(@Param("product") Product product, @Param("statuses") List<TransactionStatus> statuses);
+    boolean existsByProductAndStatusIn(Product product, List<TransactionStatus> statuses);
+
 
     /**
      * 특정 사용자(구매자 또는 판매자)의 최근 거래 내역을 조회합니다.
@@ -76,5 +76,5 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
      * 거래 자동 취소 등에 사용됩니다.
      */
     @Query("SELECT t FROM Transaction t WHERE t.status = :status AND t.createdAt < :beforeTime")
-    List<Transaction> findOldTransactionsByStatus(@Param("status") TransactionStatus status, @Param("beforeTime") java.time.LocalDateTime beforeTime);
+    Page<Transaction> findOldTransactionsByStatus(@Param("status") TransactionStatus status, @Param("beforeTime") java.time.LocalDateTime beforeTime, Pageable pageable);
 }
