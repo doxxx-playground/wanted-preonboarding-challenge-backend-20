@@ -1,3 +1,9 @@
+---
+layout: default
+title: Project Requirements
+description: Requirements and specifications for the Wanted Market project
+---
+
 # 원티드 프리온보딩 챌린지 백엔드 20 사전과제
 
 ## 설명
