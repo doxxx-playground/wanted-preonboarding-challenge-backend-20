@@ -1,5 +1,6 @@
 package com.wanted.market.domain.user.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TokenResponse {
     
+    @NotNull
     private String token;
     private String tokenType = "Bearer";
 
