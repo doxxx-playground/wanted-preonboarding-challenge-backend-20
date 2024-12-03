@@ -1,3 +1,9 @@
+---
+layout: default
+title: Development Log
+description: A detailed log of the development process and decisions
+---
+
 # 개발 로그
 
 ## 1. 프로젝트 설계 단계 (2024-12-02)

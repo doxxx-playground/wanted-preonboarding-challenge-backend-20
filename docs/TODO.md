@@ -1,3 +1,9 @@
+---
+layout: default
+title: Todo List
+description: Planned features and improvements for the Wanted Market project
+---
+
 1. 인증/인가 구현 (HIGH)
 
 ```txt
@@ -54,24 +60,3 @@ public TransactionResponse purchaseProduct(/*...*/) {
 
 4. 테스트 코드 작성 (MEDIUM)
 
-```txt
-- 단위 테스트
-    └── 각 Service 클래스별 테스트
-    └── Repository 쿼리 테스트
-- 통합 테스트
-    └── API 엔드포인트 테스트
-    └── 동시성 시나리오 테스트
-- 시나리오 테스트
-    └── 구매 프로세스 E2E 테스트
-```
-
-5. 비즈니스 검증 강화 (LOW)
-
-```txt
-- Validation 추가
-    └── 상품 가격/수량 유효성 검증
-    └── 거래 상태 전이 규칙 검증
-- 엣지 케이스 처리
-    └── 동시 구매 요청 처리
-    └── 재고 소진시 처리
-```
