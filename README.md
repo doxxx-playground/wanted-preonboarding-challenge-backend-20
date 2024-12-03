@@ -118,16 +118,6 @@ API 문서는 [여기](https://doxxx-playground.github.io/wanted-preonboarding-c
 
 프로젝트의 상세 요구사항은 [REQUIREMENTS.md](docs/REQUIREMENTS.md)에서 확인하실 수 있습니다.
 
-# 원티드 프리온보딩 챌린지 백엔드 사전과제
-
-## 개발 로그
-
-프로젝트 진행 상황과 의사결정 과정은 [DEVELOPMENT_LOG.md](docs/DEVELOPMENT_LOG.md)에서 확인하실 수 있습니다.
-
-## 요구사항
-
-프로젝트의 요구사항은 [REQUIREMENTS.md](docs/REQUIREMENTS.md)에서 확인하실 수 있습니다.
-
 ## TODO 목록
 
 프로젝트의 TODO 목록은 [TODO.md](docs/TODO.md)에서 확인하실 수 있습니다.
