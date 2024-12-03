@@ -1,5 +1,7 @@
 package com.wanted.market.domain.transaction;
 
+import com.wanted.market.common.exception.CustomException;
+import com.wanted.market.common.exception.ErrorCode;
 import com.wanted.market.domain.base.BaseEntity;
 import com.wanted.market.domain.product.Product;
 import com.wanted.market.domain.user.User;
@@ -20,7 +22,7 @@ import java.math.BigDecimal;
                 @Index(name = "idx_product", columnList = "product_id"),
                 @Index(name = "idx_buyer", columnList = "buyer_id"),
                 @Index(name = "idx_seller", columnList = "seller_id"),
-                @Index(name = "idx_status", columnList = "status")
+                @Index(name = "idx_transaction_status", columnList = "status")
         }
 )
 @Getter
@@ -71,11 +73,35 @@ public class Transaction extends BaseEntity {
         this.status = TransactionStatus.REQUESTED;
     }
 
-    public void updateStatus(TransactionStatus status) {
-        if (status == null) {
-            throw new IllegalArgumentException("Status cannot be null");
+    public void updateStatus(TransactionStatus newStatus) {
+        if (newStatus == null) {
+            throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
         }
-        this.status = status;
+
+        switch (this.status) {
+            case REQUESTED:
+                if (newStatus != TransactionStatus.APPROVED) {
+                    throw new CustomException(ErrorCode.INVALID_STATUS_UPDATE);
+                }
+                break;
+
+            case APPROVED:
+                if (newStatus != TransactionStatus.CONFIRMED) {
+                    throw new CustomException(ErrorCode.INVALID_STATUS_UPDATE);
+                }
+                break;
+
+            case CONFIRMED:
+                if (newStatus != TransactionStatus.COMPLETED) {
+                    throw new CustomException(ErrorCode.INVALID_STATUS_UPDATE);
+                }
+                break;
+
+            case COMPLETED:
+                throw new CustomException(ErrorCode.INVALID_STATUS_UPDATE);
+        }
+
+        this.status = newStatus;
     }
 
     public boolean isBuyerMatch(User user) {
