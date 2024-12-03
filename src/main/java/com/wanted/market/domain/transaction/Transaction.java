@@ -20,7 +20,7 @@ import java.math.BigDecimal;
                 @Index(name = "idx_product", columnList = "product_id"),
                 @Index(name = "idx_buyer", columnList = "buyer_id"),
                 @Index(name = "idx_seller", columnList = "seller_id"),
-                @Index(name = "idx_status", columnList = "status")
+                @Index(name = "idx_transaction_status", columnList = "status")
         }
 )
 @Getter
