@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -147,7 +148,9 @@ class ProductRepositoryTest {
             }
         });
 
-        latch.await();
+        if (!latch.await(5, TimeUnit.SECONDS)) {
+            throw new AssertionError("Test timed out");
+        }
         executorService.shutdown();
     }
 
