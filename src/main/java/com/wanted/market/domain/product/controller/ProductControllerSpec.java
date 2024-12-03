@@ -77,7 +77,7 @@ public interface ProductControllerSpec {
     @PostMapping
     ResponseEntity<ResponseDto<ProductResponse>> createProduct(
             @Parameter(hidden = true)
-            @AuthenticationPrincipal Long userId,
+            @AuthenticationPrincipal String email,
             @Parameter(description = "상품 정보", required = true)
             @Valid @RequestBody ProductCreateRequest request
     );
@@ -110,7 +110,7 @@ public interface ProductControllerSpec {
     @PutMapping("/{id}")
     ResponseEntity<ResponseDto<ProductResponse>> updateProduct(
             @Parameter(hidden = true)
-            @AuthenticationPrincipal Long userId,
+            @AuthenticationPrincipal String email,
             @Parameter(description = "상품 ID", required = true)
             @PathVariable Long id,
             @Parameter(description = "수정할 상품 정보", required = true)

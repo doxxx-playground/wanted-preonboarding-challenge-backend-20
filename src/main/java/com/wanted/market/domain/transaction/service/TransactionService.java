@@ -35,26 +35,26 @@ public class TransactionService {
      * 요구사항 5, 10: 구매하기 버튼으로 거래 시작, 1인당 1개 제한
      */
     @Transactional
-    public TransactionResponse createTransaction(Long userId, TransactionCreateRequest request) {
-        User buyer = getUserOrThrow(userId);
+    public TransactionResponse createTransaction(String email, TransactionCreateRequest request) {
+        User buyer = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
         Product product = productRepository.findByIdWithPessimisticLock(request.productId())
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
-        User seller = product.getSeller();
 
         validateTransactionCreation(buyer, product);
 
         Transaction transaction = Transaction.builder()
                 .product(product)
                 .buyer(buyer)
-                .seller(seller)
-                .purchasePrice(product.getPrice()) // 요구사항 13: 구매 시점의 가격 저장
+                .seller(product.getSeller())
+                .purchasePrice(product.getPrice())
                 .build();
 
-        product.decreaseQuantity(); // 요구사항 9, 12: 수량 관리
-        updateProductStatus(product); // 요구사항 12: 수량에 따른 상태 변경
+        product.decreaseQuantity();
+        updateProductStatus(product);
 
-        Transaction savedTransaction = transactionRepository.save(transaction);
-        return TransactionResponse.from(savedTransaction);
+        return TransactionResponse.from(transactionRepository.save(transaction));
     }
 
     /**
@@ -62,10 +62,11 @@ public class TransactionService {
      * 요구사항 8, 11: 판매자의 판매 승인과 구매자의 구매 확정
      */
     @Transactional
-    public TransactionResponse updateTransactionStatus(Long userId, Long transactionId, TransactionStatusUpdateRequest request) {
-        Transaction transaction = getTransactionOrThrow(transactionId);
-        User user = getUserOrThrow(userId);
+    public TransactionResponse updateTransactionStatus(String email, Long transactionId, TransactionStatusUpdateRequest request) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
+        Transaction transaction = getTransactionOrThrow(transactionId);
         validateStatusUpdate(transaction, user, request.status());
 
         transaction.updateStatus(request.status());
@@ -92,26 +93,35 @@ public class TransactionService {
      * 구매자의 거래 내역을 조회합니다.
      * 요구사항 7: 구매한 용품 목록 조회
      */
-    public Page<TransactionResponse> getPurchasedTransactions(Long userId, Pageable pageable) {
-        User buyer = getUserOrThrow(userId);
-        return transactionRepository.findByBuyerAndStatus(buyer, TransactionStatus.COMPLETED, pageable)
-                .map(TransactionResponse::from);
+    public Page<TransactionResponse> getPurchasedTransactions(String email, Pageable pageable) {
+        User buyer = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        return transactionRepository.findByBuyerAndStatus(
+                buyer,
+                TransactionStatus.COMPLETED,
+                pageable
+        ).map(TransactionResponse::from);
     }
 
     /**
      * 진행 중인 거래 내역을 조회합니다.
      * 요구사항 7: 예약중인 용품 목록 조회
      */
-    public Page<TransactionResponse> getOngoingTransactions(Long userId, Pageable pageable) {
-        User user = getUserOrThrow(userId);
+    public Page<TransactionResponse> getOngoingTransactions(String email, Pageable pageable) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
         List<TransactionStatus> ongoingStatuses = List.of(
                 TransactionStatus.REQUESTED,
                 TransactionStatus.APPROVED
         );
 
-        // 구매자 또는 판매자로서의 진행 중인 거래 조회
-        return transactionRepository.findRecentTransactionsByUser(user, ongoingStatuses, pageable)
-                .map(TransactionResponse::from);
+        return transactionRepository.findRecentTransactionsByUser(
+                user,
+                ongoingStatuses,
+                pageable
+        ).map(TransactionResponse::from);
     }
 
     /**

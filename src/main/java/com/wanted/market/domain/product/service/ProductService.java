@@ -28,8 +28,8 @@ public class ProductService {
      * 상품을 생성합니다.
      */
     @Transactional
-    public ProductResponse createProduct(Long sellerId, ProductCreateRequest request) {
-        User seller = userRepository.findById(sellerId)
+    public ProductResponse createProduct(String email, ProductCreateRequest request) {
+        User seller = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         Product product = Product.builder()
@@ -83,8 +83,17 @@ public class ProductService {
      * 상품 정보를 수정합니다.
      */
     @Transactional
-    public ProductResponse updateProduct(Long sellerId, Long productId, ProductUpdateRequest request) {
-        Product product = findProductByIdAndSeller(productId, sellerId);
+    public ProductResponse updateProduct(String email, Long id, ProductUpdateRequest request) {
+        User seller = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        if (!product.getSeller().equals(seller)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS);
+        }
+
         product.updatePrice(request.getPrice());
         product.updateQuantity(request.getQuantity());
         return ProductResponse.from(product);

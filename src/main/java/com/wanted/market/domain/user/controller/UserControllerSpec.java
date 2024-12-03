@@ -1,6 +1,8 @@
 package com.wanted.market.domain.user.controller;
 
 import com.wanted.market.common.dto.ResponseDto;
+import com.wanted.market.domain.user.dto.LoginRequest;
+import com.wanted.market.domain.user.dto.TokenResponse;
 import com.wanted.market.domain.user.dto.UserCreateRequest;
 import com.wanted.market.domain.user.dto.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,6 +42,28 @@ public interface UserControllerSpec {
     ResponseEntity<ResponseDto<UserResponse>> createUser(
             @Parameter(description = "회원가입 정보", required = true)
             @Valid @RequestBody UserCreateRequest request
+    );
+
+    @Operation(summary = "로그인", description = "이메일과 비밀번호로 로그인합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "로그인 성공",
+                    content = @Content(schema = @Schema(implementation = TokenResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "잘못된 요청"
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "인증 실패"
+            )
+    })
+    @PostMapping("/login")
+    ResponseEntity<ResponseDto<TokenResponse>> login(
+            @Parameter(description = "로그인 정보", required = true)
+            @Valid @RequestBody LoginRequest request
     );
 
     @Operation(summary = "내 정보 조회", description = "현재 로그인한 사용자의 정보를 조회합니다.")

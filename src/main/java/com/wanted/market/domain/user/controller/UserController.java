@@ -1,6 +1,8 @@
 package com.wanted.market.domain.user.controller;
 
 import com.wanted.market.common.dto.ResponseDto;
+import com.wanted.market.domain.user.dto.LoginRequest;
+import com.wanted.market.domain.user.dto.TokenResponse;
 import com.wanted.market.domain.user.dto.UserCreateRequest;
 import com.wanted.market.domain.user.dto.UserResponse;
 import com.wanted.market.domain.user.service.UserService;
@@ -18,10 +20,7 @@ public class UserController implements UserControllerSpec {
 
     private final UserService userService;
 
-    /**
-     * 회원 가입
-     * POST /api/users
-     */
+    @Override
     @PostMapping
     public ResponseEntity<ResponseDto<UserResponse>> createUser(
             @RequestBody @Valid UserCreateRequest request
@@ -30,15 +29,20 @@ public class UserController implements UserControllerSpec {
         return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.success(user));
     }
 
-    /**
-     * 내 정보 조회
-     * GET /api/users/me
-     */
+    @Override
+    @PostMapping("/login")
+    public ResponseEntity<ResponseDto<TokenResponse>> login(
+            @RequestBody @Valid LoginRequest request
+    ) {
+        TokenResponse token = userService.login(request);
+        return ResponseEntity.ok(ResponseDto.success(token));
+    }
+
+    @Override
     @GetMapping("/me")
     public ResponseEntity<ResponseDto<UserResponse>> getMyInfo(
             @AuthenticationPrincipal Long userId
     ) {
-        UserResponse user = userService.getUserById(userId);
-        return ResponseEntity.ok(ResponseDto.success(user));
+        return ResponseEntity.ok(ResponseDto.success(userService.getMyInfo()));
     }
 }
