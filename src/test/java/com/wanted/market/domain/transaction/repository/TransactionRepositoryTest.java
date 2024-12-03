@@ -1,6 +1,7 @@
 package com.wanted.market.domain.transaction.repository;
 
 
+import com.wanted.market.common.exception.CustomException;
 import com.wanted.market.config.TestJpaConfig;
 import com.wanted.market.domain.product.Product;
 import com.wanted.market.domain.transaction.Transaction;
@@ -21,6 +22,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 
 @DataJpaTest
@@ -101,6 +103,16 @@ class TransactionRepositoryTest {
 
         // Then
         assertThat(foundTransaction.getStatus()).isEqualTo(TransactionStatus.APPROVED);
+    }
+
+    @Test
+    @DisplayName("잘못된 거래 상태 전환 방지")
+    void preventInvalidStatusTransition() {
+        // Given
+        Transaction savedTransaction = transactionRepository.save(transaction);
+        // When & Then
+        assertThatThrownBy(() -> savedTransaction.updateStatus(TransactionStatus.COMPLETED))
+                .isInstanceOf(CustomException.class);
     }
 
     @Test
